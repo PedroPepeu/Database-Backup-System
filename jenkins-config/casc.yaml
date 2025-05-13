@@ -1,0 +1,47 @@
+# casc.yaml - Jenkins Configuration as Code
+jenkins:
+  systemMessage: "Jenkins Backup Demo Environment"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          name: "Admin"
+          password: "admin123"
+  
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: true
+
+  # Email configuration
+  nodes:
+  - permanent:
+      name: "master"
+      remoteFS: "/var/jenkins_home"
+      
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: "BACKUP_DIR"
+        value: "/opt/backups"
+
+unclassified:
+  email-ext:
+    mailAccount:
+      smtpHost: "smtp.example.com"
+      smtpPort: "587"
+      useSsl: false
+      useTls: true
+      username: "jenkins@example.com"
+      password: "password123"
+      defaultSuffix: "@example.com"
+    defaultContentType: "text/html"
+    defaultSubject: "Jenkins Backup Job: $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
+    defaultBody: |
+      <h1>$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS</h1>
+      <p>Check console output at <a href="$BUILD_URL">$BUILD_URL</a> to view the results.</p>
+      <h2>Backup Details:</h2>
+      <pre>${FILE,path="backup_details.txt"}</pre>
+
+  location:
+    url: "http://localhost:8080/"

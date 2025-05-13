@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15.3
+    container_name: backup-demo-postgres
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo123
+      POSTGRES_DB: demo_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backup-network
+
+  # Jenkins server
+  jenkins:
+    build: .
+    container_name: backup-demo-jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    environment:
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./jenkins-config:/var/jenkins_home/casc_configs
+      - ./scripts:/opt/scripts
+      - ./backups:/opt/backups
+    networks:
+      - backup-network
+
+volumes:
+  postgres_data:
+  jenkins_home:
+
+networks:
+  backup-network:
+    driver: bridge
